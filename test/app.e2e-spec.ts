@@ -1,24 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+const SERVER_LOCATION = `http://localhost:3000`;
+
+// 直接在服务器启动的情况下测试
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
-
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  const origin = 'http://localhost:3002';
+  it('跨域测试', () => {
+    return request(SERVER_LOCATION)
+      .options('/')
+      .set('Origin', origin)
+      .expect('Access-Control-Allow-Origin', origin);
   });
 });

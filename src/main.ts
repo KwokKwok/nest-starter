@@ -10,6 +10,10 @@ console.log(
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  // 跨域配置参数 https://github.com/expressjs/cors#configuration-options
+  app.enableCors({
+    origin: ['http://localhost:3002'],
+  });
   await app.listen(3000);
 }
 bootstrap();

@@ -113,3 +113,47 @@ app.useGlobalPipes(new ValidationPipe());
 
 1. 写一个[`filter`](https://docs.nestjs.cn/8/exceptionfilters?id=%e5%bc%82%e5%b8%b8%e8%bf%87%e6%bb%a4%e5%99%a8-1)
 1. 在 `src/main.ts` 中引入 `app.useGlobalFilters(new YourExceptionFilter());`
+
+---
+
+## 二、跨域配置
+
+步骤：
+
+1. 配置跨域
+2. 写测试（_通过设置`Origin`然后检查`Access-Control-Allow-Origin`_）
+
+> main.ts
+
+```ts
+async function bootstrap() {
+  // ...
+
+  // 配置参数 https://github.com/expressjs/cors#configuration-options
+  app.enableCors({
+    origin: ['http://localhost:3002'],
+  });
+
+  // ...
+}
+bootstrap();
+```
+
+> app.e2e-spec.ts
+
+```ts
+import * as request from 'supertest';
+const SERVER_LOCATION = `http://localhost:3000`;
+
+// 直接在服务器启动的情况下测试
+
+describe('AppController (e2e)', () => {
+  const origin = 'http://localhost:3002';
+  it('跨域测试', () => {
+    return request(SERVER_LOCATION)
+      .options('/')
+      .set('Origin', origin)
+      .expect('Access-Control-Allow-Origin', origin);
+  });
+});
+```
