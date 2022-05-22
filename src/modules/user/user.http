@@ -1,0 +1,32 @@
+@base = http://localhost:3000
+
+# 获取所有用户
+
+GET {{base}}/user
+
+###
+
+# 删除单个用户
+DELETE {{base}}/user/1
+
+###
+
+# 新增用户
+
+POST {{base}}/user
+Content-Type: application/json
+
+{
+  "name": "test",
+  "password": "123456"
+}
+
+###
+
+# 登录
+POST {{base}}/login
+Content-Type: application/json
+
+{
+  "name": "test"
+}
