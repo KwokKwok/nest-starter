@@ -455,3 +455,78 @@ export class LoginController {
   async login(@Body() { name, password }: LoginDto) {}
 }
 ```
+
+---
+
+## 六、使用 Swagger 自动生成接口文档
+
+[参考文档](https://docs.nestjs.cn/8/openapi)
+
+步骤：
+
+1. 安装：`ni @nestjs/swagger swagger-ui-express`
+1. `main.ts`中配置使用
+1. `nest-cli.json`中[配置插件，以自动映射属性注释](https://docs.nestjs.cn/8/openapi?id=cli%e6%8f%92%e4%bb%b6)
+1. 使用`@ApiTags`为接口分组，`@ApiOperation`为接口增加描述，`@ApiBearerAuth`为接口添加认证
+
+> main.ts
+
+```ts
+// https://docs.nestjs.cn/8/openapi
+const config = new DocumentBuilder()
+  .setTitle('NestJS API')
+  .setDescription('API 文档')
+  .setVersion('1.0')
+  .addBearerAuth() // JWT 认证
+  .build();
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('swagger', app, document); // 挂载到 /swagger 路由下
+```
+
+注释：
+
+1. `@ApiTags('用户管理')` 分组
+2. `@ApiOperation({ summary: '获取用户信息' })` 用户函数
+3. `@ApiBearerAuth()` 需要 jwt 认证，用于函数
+4. 属性的注释可以通过插件配置自动生成
+
+也可以使用[装饰器聚合](https://docs.nestjs.cn/8/customdecorators?id=%e8%a3%85%e9%a5%b0%e5%99%a8%e8%81%9a%e5%90%88)来组合使用多个装饰器：
+
+> app.decorator.ts
+
+```ts
+import { applyDecorators, Controller } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+/**
+ * 复合装饰器
+ */
+export function ApiController(route: string, name: string = route) {
+  return applyDecorators(
+    ApiBearerAuth(), //
+    ApiTags(name),
+    Controller(route),
+  );
+}
+```
+
+> user.controller.ts
+
+```diff
++@ApiController('user', '用户管理')
+-@Controller('user')
+-@ApiBearerAuth()
+-@ApiTags('用户管理')
+export class UserController {
+
++ @ApiOperation({ summary: '获取用户信息' })
+  @Get()
+  async all() {
+
+  }
+}
+```
+
+```
+
+```

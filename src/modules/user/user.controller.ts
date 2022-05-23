@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Body,
-  Controller,
   Delete,
   Get,
   Param,
@@ -12,14 +11,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { MD5 } from 'src/app/utils';
 import { Repository } from 'typeorm';
+import { ApiController } from 'src/app/app.decorator';
+import { ApiOperation } from '@nestjs/swagger';
 
-@Controller('user')
+@ApiController('user', '用户管理')
 export class UserController {
   constructor(
     @InjectRepository(User)
     private repository: Repository<User>,
   ) {}
 
+  @ApiOperation({ summary: '获取用户信息' })
   @Get()
   async all() {
     return (await this.repository.find()).map((item) => item.removeSensitive());

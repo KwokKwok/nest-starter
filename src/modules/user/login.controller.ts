@@ -3,13 +3,13 @@ import {
   Post,
   Request,
   UnauthorizedException,
-  Controller,
   Get,
 } from '@nestjs/common';
+import { ApiController } from 'src/app/app.decorator';
 import { AuthService, NoAuth } from 'src/services/auth.service';
 import { LoginDto } from './user.dto';
 
-@Controller('login')
+@ApiController('login', '登录')
 export class LoginController {
   constructor(private authService: AuthService) {}
 
