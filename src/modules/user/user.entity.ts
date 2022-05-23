@@ -1,23 +1,30 @@
-import { LoginDto } from './user.dto';
+import { BaseEntity } from 'src/app/base.entity';
+import { Column, Entity } from 'typeorm';
 
-export class User {
-  id: number;
+@Entity()
+export class User extends BaseEntity {
+  @Column()
   name: string;
+
+  @Column()
   password: string;
+
+  @Column('simple-json')
   followers: number[] = [];
+
+  @Column('simple-json')
   records: Date[] = [];
+
+  @Column('text')
   note = '';
 
   removeSensitive() {
     return { ...this, password: undefined };
   }
 
-  static fromDto(dto: LoginDto) {
+  static fromDto(user: User) {
     const newUser = new User();
-    const { name, password } = dto;
-    Object.assign(newUser, { name, password });
+    Object.assign(newUser, user);
     return newUser;
   }
-
-  static all: User[] = [];
 }

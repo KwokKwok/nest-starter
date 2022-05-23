@@ -1,36 +1,49 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { LoginDto } from './user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
+import { MD5 } from 'src/app/utils';
+import { Repository } from 'typeorm';
 
 @Controller('user')
 export class UserController {
+  constructor(
+    @InjectRepository(User)
+    private repository: Repository<User>,
+  ) {}
+
   @Get()
   async all() {
-    return User.all.map((item) => item.removeSensitive());
+    return (await this.repository.find()).map((item) => item.removeSensitive());
   }
 
   @Post()
-  async add(@Body() dto: LoginDto) {
-    const newUser = User.fromDto(dto);
-    newUser.id = Math.max(0, ...User.all.map((item) => item.id)) + 1;
-    User.all.push(newUser);
-    return newUser.removeSensitive();
+  async add(@Body() _user: User) {
+    let user: User = _user;
+    if (user.id) {
+      const oldUser = await this.repository.findOneBy({ id: user.id });
+      user = Object.assign(oldUser, _user);
+      console.log(user);
+    } else {
+      const namedUser = await this.repository.findOneBy({ name: user.name });
+      if (namedUser) throw new BadRequestException('用户名已存在');
+      user = User.fromDto(_user);
+      user.password = await MD5.encode(user.password);
+    }
+    const entity = await this.repository.save(user);
+    return entity.removeSensitive();
   }
 
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
-    const users = User.all;
-    const index = users.findIndex((user) => user.id === id);
-    if (index === -1) throw new NotFoundException('用户不存在');
-    users.splice(index, 1);
+    await this.repository.delete(id);
   }
 }

@@ -214,3 +214,67 @@ export class TasksSchedule {
   }
 }
 ```
+
+---
+
+## 四、使用 TypeORM 连接 MySQL 数据库
+
+[官方文档](https://docs.nestjs.cn/8/techniques?id=%e6%95%b0%e6%8d%ae%e5%ba%93)
+
+重点：
+
+1. `TypeOrmModule.forRoot()` 用来配置数据库，导入数据库模块
+2. `TypeOrmModule.forFeature()` 用来定义在当前范围中需要注册的数据库表
+
+```bash
+ni @nestjs/typeorm typeorm mysql2
+```
+
+```ts
+@Module({
+  imports: [
+    // 导入模块
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'password',
+      database: 'test',
+      autoLoadEntities: true, // 自动加载 forFeature 使用到的 entity
+      synchronize: true, // 自动同步数据库和字段，会在数据库中创建没有的字段
+    }),
+    // 定义在当前范围中需要注册的存储库
+    TypeOrmModule.forFeature([User]),
+  ],
+  controllers: [UserController, LoginController],
+})
+export class AppModule {}
+```
+
+使用（_详细 api 参考 [Repository 模式 API 文档](https://typeorm.bootcss.com/repository-api)_）：
+
+> user.controller.ts
+
+```ts
+@Controller('user')
+export class UserController {
+  constructor(
+    // 依赖注入
+    // 注入后就可以使用 find()、save($user) 等方法
+    @InjectRepository(User)
+    private repository: Repository<User>,
+  ) {}
+}
+```
+
+[事务](https://docs.nestjs.cn/8/techniques?id=%e4%ba%8b%e5%8a%a1)使用：
+
+```ts
+async createMany(users: User[]) {
+  await this.connection.transaction(async manager => {
+    await manager.save(users[0]);
+    await manager.save(users[1]);
+  });
+}
+```

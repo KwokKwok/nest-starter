@@ -1,3 +1,4 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AppEnvironmentType } from './app.enums';
 
 export class AppConfig {
@@ -6,4 +7,17 @@ export class AppConfig {
   }
 
   static IS_DEV_MODE = AppConfig.ENV === AppEnvironmentType.DEV;
+
+  static get TypeOrmConfig(): TypeOrmModuleOptions {
+    return {
+      type: 'mysql',
+      host: AppConfig.IS_DEV_MODE ? 'localhost' : 'your.remote.host',
+      port: 3306,
+      username: 'root',
+      password: '12345678',
+      database: 'test',
+      autoLoadEntities: true,
+      synchronize: true,
+    };
+  }
 }
