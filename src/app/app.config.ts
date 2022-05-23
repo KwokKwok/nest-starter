@@ -8,6 +8,9 @@ export class AppConfig {
 
   static IS_DEV_MODE = AppConfig.ENV === AppEnvironmentType.DEV;
 
+  static readonly JWT_SECRET = "F/c-L)=/fW_UAf@PECbdz,Z}{Afp,'";
+  static readonly JWT_EXPIRES_IN = '1h';
+
   static get TypeOrmConfig(): TypeOrmModuleOptions {
     return {
       type: 'mysql',

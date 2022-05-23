@@ -28,5 +28,12 @@ POST {{base}}/login
 Content-Type: application/json
 
 {
-  "name": "test"
+  "name": "test",
+  "password": "123456"
 }
+
+###
+
+# 获取登录信息
+GET {{base}}/login/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb2xsb3dlcnMiOltdLCJyZWNvcmRzIjpbXSwibm90ZSI6IiIsImlkIjoyLCJjcmVhdGVkX2F0IjoiMjAyMi0wNS0yM1QxMzo1Njo1OC4xODJaIiwidXBkYXRlZF9hdCI6IjIwMjItMDUtMjNUMTM6NTY6NTguMTgyWiIsIm5hbWUiOiJ0ZXN0IiwiaWF0IjoxNjUzMzE2MTk2LCJleHAiOjE2NTMzMTk3OTZ9.jTp7OaMdJRSTWY0wAzGYjDJvZjJk_GaR2Kp5ups6OCI

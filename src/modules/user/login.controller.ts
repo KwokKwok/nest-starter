@@ -1,23 +1,31 @@
-import { Body, Post, UnauthorizedException, Controller } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { MD5 } from 'src/app/utils';
-import { Repository } from 'typeorm';
+import {
+  Body,
+  Post,
+  Request,
+  UnauthorizedException,
+  Controller,
+  Get,
+} from '@nestjs/common';
+import { AuthService, NoAuth } from 'src/services/auth.service';
 import { LoginDto } from './user.dto';
-import { User } from './user.entity';
 
 @Controller('login')
 export class LoginController {
-  constructor(
-    @InjectRepository(User)
-    private repository: Repository<User>,
-  ) {}
+  constructor(private authService: AuthService) {}
 
+  @NoAuth()
   @Post()
   async login(@Body() { name, password }: LoginDto) {
-    const user = await this.repository.findOneBy({ name });
-    const encodePassword = await MD5.encode(password);
-    if (!user || user.password !== encodePassword)
+    const user = await this.authService.validate(name, password);
+
+    if (!user) {
       throw new UnauthorizedException('用户名或密码错误');
-    return user.removeSensitive();
+    }
+    return await this.authService.generateToken(user);
+  }
+
+  @Get('status')
+  async status(@Request() req) {
+    return req.user;
   }
 }
