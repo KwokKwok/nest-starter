@@ -1,0 +1,184 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Helvetica Neue, Arial, Noto Sans, sans-serif, apple color emoji,
+    segoe ui emoji, Segoe UI Symbol, noto color emoji;
+  background-color: #f6f6f6;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  height: 90vh;
+  width: 90vw;
+  top: 3vh;
+  left: 5vw;
+  padding: 20px 0;
+  border-radius: 10px;
+  background-color: #f6f6f6;
+  box-sizing: border-box;
+  box-shadow: 3px 4px 20px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tip {
+  position: fixed;
+  top: 93vh;
+  right: 5vw;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 10px;
+  color: #999;
+}
+
+.msgs {
+  flex: 1;
+  overflow: auto;
+  margin-bottom: 10px;
+  padding: 0 20px;
+}
+
+.msg {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  line-height: 1.5em;
+  align-items: flex-start;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.msg.system {
+  color: #999;
+  background-color: transparent;
+}
+
+.msg-from {
+  padding: 0 8px;
+  color: #333;
+  border-radius: 5px;
+  text-align: center;
+  width: 100px;
+  box-sizing: border-box;
+  margin-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: antiquewhite;
+}
+
+.system .msg-from {
+  background-color: #000;
+  color: white;
+}
+
+.msg-text {
+  flex: 1;
+  white-space: pre;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  border-top: 3px solid #eee;
+}
+
+.input-name {
+  width: 100px;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.input-content {
+  flex: 1;
+  height: 100px;
+  resize: none;
+}
+
+.send,
+input,
+textarea {
+  transition: all ease-in-out 0.3s;
+}
+
+input,
+textarea {
+  outline-style: none;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+}
+
+input:focus,
+textarea:focus {
+  border: 1px solid #80bdff;
+  box-shadow: 0 0 0 0.1rem rgb(0 123 255 / 25%);
+}
+
+.send {
+  color: #333;
+  display: inline-block;
+  text-align: center;
+  width: 50px;
+  margin-right: 20px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  align-self: flex-end;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.018);
+}
+.send:hover {
+  background-color: rgba(0, 0, 0, 0.035);
+}
+.send.disable {
+  color: #ccc;
+}
+
+/* 滚动槽 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  transition: background-color 1000ms ease-in-out;
+  background-color: rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 700px) {
+  /* 滚动槽 */
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 1.5px;
+    background: rgba(0, 0, 0, 0.06);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
+  }
+  /* 滚动条滑块 */
+  ::-webkit-scrollbar-thumb {
+    border-radius: 1.5px;
+    background: rgba(#6daac9, 0.5);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.inputs {
+  padding: 18px;
+}

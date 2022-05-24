@@ -9,6 +9,7 @@ import { LoginController } from './modules/user/login.controller';
 import { UserController } from './modules/user/user.controller';
 import { User } from './modules/user/user.entity';
 import { AuthService, JwtStrategy, MyAuthGuard } from './services/auth.service';
+import { ChatGateway } from './services/chat.gateway';
 import { TasksSchedule } from './services/task.schedule';
 
 @Module({
@@ -33,6 +34,7 @@ import { TasksSchedule } from './services/task.schedule';
       provide: APP_GUARD,
       useClass: MyAuthGuard,
     },
+    ChatGateway,
   ],
 })
 export class AppModule {}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Nestjs SocketIO 聊天室</title>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.3.2/socket.io.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div id="app" class="container">
+    <div class="msgs" ref="msgs">
+      <div class="msg" :class="{system:message.isSystem}" v-for="message of messages">
+        <div class="msg-from">{{message.from}}</div>
+        <div class="msg-text">{{message.text}}</div>
+      </div>
+    </div>
+    <div class="inputs">
+      <input type="text" class="input-name" id="username" v-model="name" :disabled="joined" placeholder="昵称">
+      <textarea class="input-content" v-model="text"></textarea>
+    </div>
+    <div class="send" :class="{disable:!name||!text}" @click="onSend">发送</div>
+    <span class="tip">{{tip}}</span>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+
+</html>

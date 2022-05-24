@@ -1,5 +1,22 @@
 # nest-starter
 
+> 实现什么?
+
+1. 一个 RESTful API 程序，并对 传输的数据（_DTO_） 进行校验（_是否必要、类型_）
+2. 支持跨域
+3. 支持定时任务
+4. 数据库（_MySQL、TypeORM_）
+5. 基于 JWT 做接口鉴权
+6. 使用 Swagger 自动生成接口文档
+7. 基于 socket.io 支持实时通信。实现聊天室前端页面并作为静态文件挂载
+
+> 一些个人化的想法
+
+1. 移除 service 中间层，会在 controller 中直接访问数据库
+2. 不组合多个 `module` ，只留一个全局 `module`。所有的 `controller`、`service` 等都直接添加到全局 `module`。只在代码层面组织不同的模块
+3. 日志交给系统管理，比如 `journalctl` 。不考虑将日志写到文件的需求，只使用框架自身提供的日志能力
+4. 暂时只使用框架提供的异常类。比如：鉴权失败、资源未找到
+
 ---
 
 ## 零、初始化项目
@@ -527,6 +544,106 @@ export class UserController {
 }
 ```
 
+---
+
+## 七、基于 socket.io 实现聊天室，并挂载前端页面
+
+[中文文档](https://docs.nestjs.cn/8/websockets?id=websocket)
+
+1. 安装依赖：`ni ni @nestjs/websockets @nestjs/platform-socket.io socket.io`
+1. 实现后端功能 `chat.gateway.ts`，并注册到`app.module.ts`中的`providers`中
+1. 实现前端页面，放在`static/socket`路径下，并在`main.ts`中配置静态文件访问
+
+> chat.gateway.ts
+
+```ts
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  OnGatewayInit,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
+import { Logger, UseGuards } from '@nestjs/common';
+import { Socket, Server } from 'socket.io';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
+
+enum SocketEvent {
+  System = 'system',
+  Message = 'message',
+  Statistic = 'statistic',
+}
+
+@WebSocketGateway({
+  namespace: '/chat',
+})
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  private clients: Map<string, Socket> = new Map();
+
+  constructor(private readonly authService: AuthService) {}
+
+  @WebSocketServer() server: Server;
+  private logger: Logger = new Logger(ChatGateway.name);
+
+  @SubscribeMessage(SocketEvent.Message)
+  handleMessage(client: Socket, payload: string): void {
+    this.server.emit(SocketEvent.Message, payload);
+  }
+
+  afterInit(_: Server) {
+    this.logger.log('聊天室初始化');
+  }
+
+  handleDisconnect(client: Socket) {
+    this.logger.log(`WS 客户端断开连接: ${client.id}`);
+    this.clients.delete(client.id);
+    this.sendStatistics();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  handleConnection(client: Socket) {
+    // TOKEN 校验
+
+    // const token = client.handshake.headers.authorization;
+    // const user = this.authService.parseToken(token.split(' ')[1]);
+    // if (!user) {
+    //   return client.disconnect(true);
+    // }
+
+    this.logger.log(`WS 客户端连接成功: ${client.id}`);
+    this.clients.set(client.id, client);
+    client.emit(SocketEvent.System, '聊天室连接成功');
+    this.sendStatistics();
+  }
+
+  sendStatistics() {
+    this.server.emit(SocketEvent.Statistic, this.clients.size);
+  }
+}
 ```
 
+> main.ts
+
+```diff
++ import { NestExpressApplication } from '@nestjs/platform-express';
++ import { join } from 'path';
+
+async function bootstrap() {
+- const app = await NestFactory.create(AppModule);
++ const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // ...
+
+  // 提供静态文件访问
++ app.useStaticAssets(join(__dirname, '..', 'static'));
+
+  await app.listen(3000);
+}
+bootstrap();
 ```
+
+_前端代码见提交记录_
